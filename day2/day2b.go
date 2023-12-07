@@ -26,12 +26,10 @@ func main() {
 		line = line[colonIndex+1:]
 
 		gameData := strings.Split(line, ";")
-		// fmt.Println(gameData)
 		for _, data := range gameData {
 			// Splitting each set by commas to get individual colors
 			colors := strings.Split(data, ",")
 			for _, color := range colors {
-				// fmt.Println(colors)
 				// Trimming spaces from the color string
 				color = strings.TrimSpace(color)
 				// Extracting the color name and count
@@ -39,16 +37,9 @@ func main() {
 				var name string
 				// Checking if there's a number and color
 				fmt.Sscanf(color, "%d %s", &count, &name)
-				// fmt.Println(count)
-				// fmt.Println(name)
-				// fmt.Println("lenght", len(name))
 				if value, exists := seen[name]; exists {
-					// fmt.Println("value", value)
 					if count > value {
 						seen[name] = count
-						// fmt.Println("bigger")
-						// fmt.Println(count)
-						// fmt.Println(name)
 					}
 				} else {
 					seen[name] = count
