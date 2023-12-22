@@ -1,0 +1,101 @@
+package day10a
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
+
+func Run() {
+	file, _ := os.Open("input.txt")
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	lines := make([]string, 0, 0)
+	pos := []int{-1, 0}
+
+	//read in file and locate 'S'
+	for scanner.Scan() {
+		line := scanner.Text()
+		lines = append(lines, line)
+	}
+	found := false
+	for row, line := range lines {
+		for idx, element := range line {
+			if element == 'S' {
+				pos[1] = idx
+				found = true
+				break
+			}
+		}
+		if found {
+			pos[0] = row
+			break
+		}
+	}
+
+	//get first direction
+
+	direction := []int{0, 0}
+	if pos[0]+1 < len(lines) && contains([]rune{'|', 'L', 'J'}, rune(lines[pos[0]+1][pos[1]])) {
+		direction = []int{1, 0} //down
+	} else if pos[0]-1 >= 0 && contains([]rune{'|', 'F', '7'}, rune(lines[pos[0]-1][pos[1]])) {
+		direction = []int{-1, 0} //up
+	} else if pos[1]+1 < len(lines[0]) && contains([]rune{'-', 'J', '7'}, rune(lines[pos[0]][pos[1]+1])) {
+		direction = []int{0, 1} //right
+	} else if pos[1]-1 >= 0 && contains([]rune{'-', 'F', 'L'}, rune(lines[pos[0]][pos[1]-1])) {
+		direction = []int{0, -1} //left
+	}
+
+	max := 1
+	current_pos := make([]int, len(pos))
+	copy(current_pos, pos)
+	current_pos[0] += direction[0]
+	current_pos[1] += direction[1]
+
+	for current_pos[0] != pos[0] || current_pos[1] != pos[1] {
+		cur := lines[current_pos[0]][current_pos[1]]
+		if cur == 'L' {
+			if direction[0] == 1 { // down
+				direction = []int{0, 1} // go right
+			} else {
+				direction = []int{-1, 0} // go up
+			}
+		} else if cur == 'J' {
+			if direction[0] == 1 { //down
+				direction = []int{0, -1} // go left
+			} else {
+				direction = []int{-1, 0} // go up
+			}
+		} else if cur == 'F' {
+			if direction[0] == -1 { //up
+				direction = []int{0, 1} // go right
+			} else {
+				direction = []int{1, 0} // go down
+			}
+		} else if cur == '7' {
+			if direction[0] == -1 { // up
+				direction = []int{0, -1} //go left
+			} else {
+				direction = []int{1, 0} // go down
+			}
+		}
+		// if cur == '|' or cur == '-' then can keep direction the same (up or down) or (left and rigth)
+		current_pos[0] += direction[0]
+		current_pos[1] += direction[1]
+		max++
+	}
+	// if odd number of steps, add one
+	fmt.Println(max/2 + (max%2 | 0))
+
+}
+
+func contains(arr []rune, target rune) bool {
+	for _, v := range arr {
+		if v == target {
+			return true
+		}
+	}
+	return false
+}
